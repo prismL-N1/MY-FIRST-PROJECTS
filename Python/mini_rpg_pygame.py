@@ -134,7 +134,7 @@ class Player:
             self.hp = self.max_hp
             self.atk += 1
             log.append(
-                f"LEVEL UP! ახლა ხარ {self.level} დონეზე (+20 HP, +1 ATK)")
+                f"LEVEL UP! you are now {self.level} level (+20 HP, +1 ATK)")
 
 
 class Enemy:
@@ -210,7 +210,7 @@ def enter_room(room_id):
     if room.get("shop"):
         state = STATE_SHOP
         log.clear()
-        add_log("კარავში შემოხვედი. რითი დაგეხმარო?")
+        add_log("you are in shop how can i help you?")
         return
 
     state = STATE_EXPLORE
@@ -222,27 +222,27 @@ def enter_room(room_id):
             ey = HEIGHT // 2 + math.sin(angle) * 160
             enemies.append(Enemy(ename, ex, ey))
         if room["enemies"]:
-            add_log(f"{', '.join(room['enemies'])} გამოჩნდა!")
+            add_log(f"{', '.join(room['enemies'])} here it is!")
     else:
-        add_log("ეს ოთახი უკვე გასუფთავებულია.")
+        add_log("this room is already clear.")
 
 
 def buy_potion():
     if player.gold >= 10:
         player.gold -= 10
         player.potions += 1
-        add_log("იყიდე Health Potion!")
+        add_log("buy Health Potion!")
     else:
-        add_log("არ გყოფნის ოქრო!")
+        add_log("not enough gold!")
 
 
 def buy_upgrade():
     if player.gold >= 20:
         player.gold -= 20
         player.atk += 1
-        add_log(f"ხმალი გაუმჯობესდა! ATK: {player.atk}")
+        add_log(f"sword upgraded! ATK: {player.atk}")
     else:
-        add_log("არ გყოფნის ოქრო!")
+        add_log("not enough gold!")
 
 
 # ---------------------------------------------------------------------------
@@ -251,16 +251,16 @@ def buy_upgrade():
 shop_buttons = [
     Button(WIDTH // 2 - 150, 300, 300, 55, "Health Potion - 10g"),
     Button(WIDTH // 2 - 150, 370, 300, 55, "Sword Upgrade - 20g"),
-    Button(WIDTH // 2 - 150, 440, 300, 55, "დატოვე კარავი"),
+    Button(WIDTH // 2 - 150, 440, 300, 55, "leaved shop"),
 ]
-game_over_buttons = [Button(WIDTH // 2 - 100, 420, 200, 55, "გასვლა")]
+game_over_buttons = [Button(WIDTH // 2 - 100, 420, 200, 55, "EXIT")]
 pause_buttons = [
-    Button(WIDTH // 2 - 130, 260, 260, 55, "რუკა"),
-    Button(WIDTH // 2 - 130, 330, 260, 55, "პერსონაჟი"),
-    Button(WIDTH // 2 - 130, 400, 260, 55, "დაბრუნება"),
-    Button(WIDTH // 2 - 130, 470, 260, 55, "გასვლა"),
+    Button(WIDTH // 2 - 130, 260, 260, 55, "map"),
+    Button(WIDTH // 2 - 130, 330, 260, 55, "character"),
+    Button(WIDTH // 2 - 130, 400, 260, 55, "return"),
+    Button(WIDTH // 2 - 130, 470, 260, 55, "EXIT"),
 ]
-map_back_btn = Button(WIDTH // 2 - 110, 560, 220, 50, "დაბრუნება")
+map_back_btn = Button(WIDTH // 2 - 110, 560, 220, 50, "return")
 
 
 # ---------------------------------------------------------------------------
@@ -315,7 +315,7 @@ def update_explore(keys):
         if dist < player.radius + e.radius and player.invuln_timer == 0:
             player.hp -= e.atk
             player.invuln_timer = 45
-            add_log(f"{e.name}-მა დაგარტყა! -{e.atk} HP")
+            add_log(f"{e.name}-hit you! -{e.atk} HP")
             if player.hp <= 0:
                 player.hp = 0
                 state = STATE_GAME_OVER
@@ -332,7 +332,7 @@ def update_explore(keys):
                     player.xp += e.xp_reward
                     player.gold += e.gold_reward
                     add_log(
-                        f"{e.name} დამარცხდა! +{e.xp_reward} XP +{e.gold_reward} Gold")
+                        f"{e.name} lost! +{e.xp_reward} XP +{e.gold_reward} Gold")
                     player.level_up_check(log)
                 break
 
@@ -368,13 +368,13 @@ def fire_bullet_towards(mx, my):
 def draw_name_input():
     screen.fill(BG_DARK)
     draw_text(screen, "MINI RPG", FONT_BIG, GOLD, WIDTH // 2, 160, center=True)
-    draw_text(screen, "შეიყვანე სახელი:", FONT,
+    draw_text(screen, "enter name:", FONT,
               TEXT_MAIN, WIDTH // 2, 240, center=True)
     box = pygame.Rect(WIDTH // 2 - 150, 270, 300, 45)
     draw_panel(screen, box, glow=True)
     draw_text(screen, name_input_text + "|", FONT,
               TEXT_MAIN, box.x + 10, box.y + 10)
-    draw_text(screen, "დააჭირე ENTER-ს დასადასტურებლად",
+    draw_text(screen, "press ENTER for confirmation",
               FONT_SMALL, TEXT_DIM, WIDTH // 2, 340, center=True)
 
 
@@ -450,10 +450,10 @@ def draw_explore():
     draw_hud()
 
     if not enemies and ROOMS[current_room]["enemies"]:
-        draw_text(screen, "ოთახი გასუფთავებულია — გადადი კარებში",
+        draw_text(screen, "room is clear go on",
                   FONT_SMALL, TEXT_DIM, WIDTH // 2, 60, center=True)
 
-    draw_text(screen, "WASD მოძრაობა · მაუსის დაწკაპუნება სროლა · ESC მენიუ", FONT_SMALL, TEXT_DIM,
+    draw_text(screen, "WASD movement · mouse left button · ESC menu", FONT_SMALL, TEXT_DIM,
               WIDTH // 2, HEIGHT - 14, center=True)
 
 
@@ -468,17 +468,17 @@ ROOM_POSITIONS = {
     "shop_room":     (0, 1),
 }
 ROOM_LABELS = {
-    "start": "დასაწყისი",
-    "goblin_room": "გობლინის ოთახი",
-    "skeleton_room": "ჩონჩხის ოთახი",
-    "dragon_room": "დრაკონის ბუნაგი",
-    "shop_room": "ვაჭრის კარავი",
+    "start": "start",
+    "goblin_room": "goblin room",
+    "skeleton_room": "skeleton room",
+    "dragon_room": "dragon nest",
+    "shop_room": "shop",
 }
 
 
 def draw_map():
     screen.fill(BG_DARK)
-    draw_text(screen, "რუკა", FONT_BIG, GOLD, WIDTH // 2, 70, center=True)
+    draw_text(screen, "map", FONT_BIG, GOLD, WIDTH // 2, 70, center=True)
 
     cell_w, cell_h = 150, 110
     origin_x, origin_y = 200, 180
@@ -518,7 +518,7 @@ def draw_map():
                 ty = origin_y + tgy * cell_h + 40
                 pygame.draw.line(screen, BORDER, rect.center, (tx, ty), 2)
 
-    draw_text(screen, "მწვანე საზღვარი = გასუფთავებული ოთახი",
+    draw_text(screen, "green line = room clear",
               FONT_SMALL, TEXT_DIM, WIDTH // 2, 500, center=True)
     map_back_btn.draw(screen, pygame.mouse.get_pos())
 
@@ -529,7 +529,7 @@ def draw_map():
 def draw_shop():
     screen.fill(BG_DARK)
     draw_hud()
-    draw_text(screen, "ვაჭრის კარავი", FONT_BIG,
+    draw_text(screen, "shop", FONT_BIG,
               GOLD, WIDTH // 2, 160, center=True)
     mouse_pos = pygame.mouse.get_pos()
     for b in shop_buttons:
@@ -563,10 +563,10 @@ def draw_pause_menu():
 # ---------------------------------------------------------------------------
 def draw_game_over():
     screen.fill((0, 0, 0))
-    draw_text(screen, "დაიღუპე", FONT_BIG, RED, WIDTH // 2, 240, center=True)
+    draw_text(screen, "you died", FONT_BIG, RED, WIDTH // 2, 240, center=True)
     draw_text(screen, "Game Over", FONT, TEXT_MAIN,
               WIDTH // 2, 290, center=True)
-    draw_text(screen, f"დონე: {player.level}   ოქრო: {player.gold}", FONT_SMALL, TEXT_DIM,
+    draw_text(screen, f"level: {player.level}   gold: {player.gold}", FONT_SMALL, TEXT_DIM,
               WIDTH // 2, 340, center=True)
     mouse_pos = pygame.mouse.get_pos()
     for b in game_over_buttons:
@@ -612,20 +612,20 @@ def handle_event(event):
                     buy_potion()
                 elif b.text.startswith("Sword"):
                     buy_upgrade()
-                elif b.text.startswith("დატოვე"):
+                elif b.text.startswith("left"):
                     enter_room(ROOMS[current_room]
                                ["exits"].get("N", current_room))
 
     elif state == STATE_PAUSE_MENU:
         for b in pause_buttons:
             if b.clicked(event):
-                if b.text == "რუკა":
+                if b.text == "map":
                     state = STATE_MAP
-                elif b.text == "პერსონაჟი":
+                elif b.text == "character":
                     pass  # could open a character panel later
-                elif b.text == "დაბრუნება":
+                elif b.text == "return":
                     state = STATE_EXPLORE
-                elif b.text == "გასვლა":
+                elif b.text == "EXIT":
                     pygame.quit()
                     sys.exit()
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
